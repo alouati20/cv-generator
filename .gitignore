@@ -1,0 +1,6 @@
+.venv/*
+/.venv/
+/.idea/
+.DS_Store
+credentials.json
+token.json
