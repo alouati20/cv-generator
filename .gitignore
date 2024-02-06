@@ -5,3 +5,5 @@
 credentials.json
 token.json
 cv_data.json
+extractors/__pycache__/*
+__pycache__

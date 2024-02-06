@@ -1,31 +1,24 @@
-# Copyright 2018 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-# [START docs_quickstart]
-import os.path
-
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+
+import os.path
 import json
+from extractors.extract_certifications import extract_certifications
+from extractors.extract_title import extract_title
+from extractors.extract_formation import extract_formation
+from extractors.extract_skills import extract_skills
+from extractors.extract_frameworks import extract_frameworks
+from extractors.extract_ide import extract_ide
+from extractors.extract_tools import extract_tools
+
+
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/documents.readonly"]
 
-# The ID of a sample document.
 DOCUMENT_ID = "1EZe9hw2Sw0k1x42O1V1lnh3qBVMRLyecMa423-agG8g"
 
 
@@ -35,8 +28,7 @@ def main():
   """
   creds = None
   # The file token.json stores the user's access and refresh tokens, and is
-  # created automatically when the authorization flow completes for the first
-  # time.
+  # created automatically when the authorization flow completes for the first time.
   if os.path.exists("token.json"):
     creds = Credentials.from_authorized_user_file("token.json", SCOPES)
   # If there are no (valid) credentials available, let the user log in.
@@ -97,14 +89,13 @@ def format_content(text):
 
   # Organize the data into a dictionary
   data = {
-      "title": cleaned_text.split("'")[1],
-      "certifications": cleaned_text.split("Certifications")[1].split("Formation")[0].strip(', '),
-      "formation": cleaned_text.split("Formation")[1].split("Connaissances")[0].strip(', '),
-      "langages": cleaned_text.split("Langages")[1].split("Frameworks")[0].strip(', '),
-      "frameworks": cleaned_text.split("Frameworks")[1].split("SGBD")[0].strip(', '),
-      "sgbd": cleaned_text.split("SGBD")[1].split("IDE")[0].strip(', '),
-      "ide": cleaned_text.split("IDE")[1].split("Outils")[0].strip(', '),
-      "outils": cleaned_text.split("Outils")[1].split("Autres")[0].strip(', '),
+      "title": extract_title(cleaned_text.split("'")),
+      "certifications": extract_certifications(cleaned_text),
+      "formation": extract_formation(cleaned_text),
+      "skills": extract_skills(cleaned_text),
+      "frameworks": extract_frameworks(cleaned_text),
+      "ide": extract_ide(cleaned_text),
+      "tools": extract_tools(cleaned_text),
       "autres": cleaned_text.split("Autres")[1].split("LANGUES")[0].strip(', '),
       "langues": cleaned_text.split("LANGUES")[1].split("ExpériencesProfessionnelles")[0].strip(', '),
       "experiences_professionnelles": cleaned_text.split("ExpériencesProfessionnelles")[1].split("Ayoub A.")[0].strip(', '),
