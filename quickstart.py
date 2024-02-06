@@ -20,12 +20,13 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+import json
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/documents.readonly"]
 
 # The ID of a sample document.
-DOCUMENT_ID = "1oGKXThtAE_olF7r3QsvkcXRd-Tc8EVGl0Gt1WWM0TRs"
+DOCUMENT_ID = "1EZe9hw2Sw0k1x42O1V1lnh3qBVMRLyecMa423-agG8g"
 
 
 def main():
@@ -52,24 +53,25 @@ def main():
       token.write(creds.to_json())
 
   try:
+    filename = 'demofile2.txt'
+
     service = build("docs", "v1", credentials=creds)
 
     # Retrieve the documents contents from the Docs service.
     document = service.documents().get(documentId=DOCUMENT_ID).execute()
 
-    f = open("demofile2.txt", "w")
+    f = open(filename, "w")
     #f.write(str(document))
     text_styles = extract_text_styles(document)
+    format_content(str(text_styles))
     f.write(str(text_styles))
     f.close()
-
-    print(f"The title of the document is: {document}")
+    
   except HttpError as err:
     print(err)
 
 
 
-import json
 
 def extract_text_styles(json_content):
     text_styles = []
@@ -88,6 +90,31 @@ def extract_text_styles(json_content):
 
     recursive_extract(json_content)
     return text_styles
+
+def format_content(text):
+    # Clean the text
+  cleaned_text = str(text).replace('\\x0b', '').replace('\\n', '').replace('\\t', '')
+
+  # Organize the data into a dictionary
+  data = {
+      "title": cleaned_text.split("'")[1],
+      "certifications": cleaned_text.split("Certifications")[1].split("Formation")[0].strip(', '),
+      "formation": cleaned_text.split("Formation")[1].split("Connaissances")[0].strip(', '),
+      "langages": cleaned_text.split("Langages")[1].split("Frameworks")[0].strip(', '),
+      "frameworks": cleaned_text.split("Frameworks")[1].split("SGBD")[0].strip(', '),
+      "sgbd": cleaned_text.split("SGBD")[1].split("IDE")[0].strip(', '),
+      "ide": cleaned_text.split("IDE")[1].split("Outils")[0].strip(', '),
+      "outils": cleaned_text.split("Outils")[1].split("Autres")[0].strip(', '),
+      "autres": cleaned_text.split("Autres")[1].split("LANGUES")[0].strip(', '),
+      "langues": cleaned_text.split("LANGUES")[1].split("ExpériencesProfessionnelles")[0].strip(', '),
+      "experiences_professionnelles": cleaned_text.split("ExpériencesProfessionnelles")[1].split("Ayoub A.")[0].strip(', '),
+  }
+
+  print(cleaned_text.split("'")[1])
+
+  # Write data to a JSON file
+  with open('cv_data.json', 'w') as json_file:
+      json.dump(data, json_file, ensure_ascii=False, indent=4)
 
 
 
