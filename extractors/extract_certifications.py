@@ -1,16 +1,17 @@
 def extract_certifications(content):
-  cleaned_text = content.split("Certifications")[1].split("Formation")[0]
-  data = cleaned_text.split(',')
-  cleaned_array = []
-  for el in data:
-        if(el.strip() != "'" and el.strip() != "''"):
-            cleaned_array.append(el.strip())
   result = []
+  if(len(content.split("Certifications")) > 1 and len(content.split("Formation")) > 1):
+      cleaned_text = content.split("Certifications")[1].split("Formation")[0]
+      data = cleaned_text.split(',')
+      cleaned_array = []
+      for el in data:
+            if(el.strip() != "'" and el.strip() != "''"):
+                  cleaned_array.append(el.strip())
 
-  for i in range(0, len(cleaned_array), 2):
-        date = cleaned_array[i].strip("' :")
-        name = cleaned_array[i+1].strip("'")
-        result.append({"date": date, "name": name})
+      for i in range(0, len(cleaned_array), 2):
+            date = cleaned_array[i].strip("' :")
+            name = cleaned_array[i+1].strip("'")
+            result.append({"date": date, "name": name})
 
 
   return result
