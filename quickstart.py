@@ -13,19 +13,24 @@ from extractors.extract_skills import extract_skills
 from extractors.extract_frameworks import extract_frameworks
 from extractors.extract_ide import extract_ide
 from extractors.extract_tools import extract_tools
+from extractors.extract_content_without_style import extract_content_without_style
 
 
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/documents.readonly"]
 
-DOCUMENT_ID = "1EZe9hw2Sw0k1x42O1V1lnh3qBVMRLyecMa423-agG8g"
+#DOCUMENT_ID = "1EZe9hw2Sw0k1x42O1V1lnh3qBVMRLyecMa423-agG8g" # ayoub doc
+#DOCUMENT_ID = "1nuHvOcYIKp7nNXvVFDQmr8cWdxSU1HLICi9HSoXBCIE" # hassen doc
+#DOCUMENT_ID = "1tB7Q1qCKSKatqGumbGKouYWc_h-dFhHwHuzZs-ardyU" # achraf doc
+#DOCUMENT_ID = "1q-PITDz3dB2C1YlbeycehFEa5TAgjukAyCCc6WuStEI" # boubaker doc
+
+
+
 
 
 def main():
-  """Shows basic usage of the Docs API.
-  Prints the title of a sample document.
-  """
+  
   creds = None
   # The file token.json stores the user's access and refresh tokens, and is
   # created automatically when the authorization flow completes for the first time.
@@ -45,7 +50,7 @@ def main():
       token.write(creds.to_json())
 
   try:
-    filename = 'demofile2.txt'
+    filename = 'cv-content.txt'
 
     service = build("docs", "v1", credentials=creds)
 
@@ -53,8 +58,7 @@ def main():
     document = service.documents().get(documentId=DOCUMENT_ID).execute()
 
     f = open(filename, "w")
-    #f.write(str(document))
-    text_styles = extract_text_styles(document)
+    text_styles = extract_content_without_style(document)
     format_content(str(text_styles))
     f.write(str(text_styles))
     f.close()
@@ -62,26 +66,6 @@ def main():
   except HttpError as err:
     print(err)
 
-
-
-
-def extract_text_styles(json_content):
-    text_styles = []
-
-    def recursive_extract(element):
-        if isinstance(element, dict):
-            if "textRun" in element:
-                text_run = element["textRun"]
-                if "content" in text_run and text_run["content"] not in ["\n", " ", "\\x0b"]:
-                    text_styles.append(text_run["content"].replace("\\x0b", ""))
-            for key, value in element.items():
-                recursive_extract(value)
-        elif isinstance(element, list):
-            for item in element:
-                recursive_extract(item)
-
-    recursive_extract(json_content)
-    return text_styles
 
 def format_content(text):
     # Clean the text
@@ -92,16 +76,16 @@ def format_content(text):
       "title": extract_title(cleaned_text.split("'")),
       "certifications": extract_certifications(cleaned_text),
       "formation": extract_formation(cleaned_text),
-      "skills": extract_skills(cleaned_text),
-      "frameworks": extract_frameworks(cleaned_text),
-      "ide": extract_ide(cleaned_text),
-      "tools": extract_tools(cleaned_text),
-      "autres": cleaned_text.split("Autres")[1].split("LANGUES")[0].strip(', '),
-      "langues": cleaned_text.split("LANGUES")[1].split("ExpériencesProfessionnelles")[0].strip(', '),
-      "experiences_professionnelles": cleaned_text.split("ExpériencesProfessionnelles")[1].split("Ayoub A.")[0].strip(', '),
+      "technos": extract_skills(cleaned_text),
+      # "frameworks": extract_frameworks(cleaned_text),
+      # "ide": extract_ide(cleaned_text),
+      # "tools": extract_tools(cleaned_text),
+      # "autres": cleaned_text.split("Autres")[1].split("LANGUES")[0].strip(', '),
+      # "langues": cleaned_text.split("LANGUES")[1].split("ExpériencesProfessionnelles")[0].strip(', '),
+      # "experiences_professionnelles": cleaned_text.split("ExpériencesProfessionnelles")[1].split("Ayoub A.")[0].strip(', '),
   }
 
-  print(cleaned_text.split("'")[1])
+  print("CV TITLE ====> " + cleaned_text.split("'")[1])
 
   # Write data to a JSON file
   with open('cv_data.json', 'w') as json_file:
