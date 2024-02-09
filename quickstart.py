@@ -14,16 +14,20 @@ from extractors.extract_frameworks import extract_frameworks
 from extractors.extract_ide import extract_ide
 from extractors.extract_tools import extract_tools
 from extractors.extract_content_without_style import extract_content_without_style
+from extractors.extract_exp_pro import extract_exp_pro
+from extractors.extract_username import extract_username
+
+
 
 
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/documents.readonly"]
 
-#DOCUMENT_ID = "1EZe9hw2Sw0k1x42O1V1lnh3qBVMRLyecMa423-agG8g" # ayoub doc
-#DOCUMENT_ID = "1nuHvOcYIKp7nNXvVFDQmr8cWdxSU1HLICi9HSoXBCIE" # hassen doc
-#DOCUMENT_ID = "1tB7Q1qCKSKatqGumbGKouYWc_h-dFhHwHuzZs-ardyU" # achraf doc
-#DOCUMENT_ID = "1q-PITDz3dB2C1YlbeycehFEa5TAgjukAyCCc6WuStEI" # boubaker doc
+# DOCUMENT_ID = "1EZe9hw2Sw0k1x42O1V1lnh3qBVMRLyecMa423-agG8g" # ayoub doc
+DOCUMENT_ID = "1nuHvOcYIKp7nNXvVFDQmr8cWdxSU1HLICi9HSoXBCIE" # hassen doc
+# DOCUMENT_ID = "1tB7Q1qCKSKatqGumbGKouYWc_h-dFhHwHuzZs-ardyU" # achraf doc
+# DOCUMENT_ID = "1q-PITDz3dB2C1YlbeycehFEa5TAgjukAyCCc6WuStEI" # boubaker doc
 
 
 
@@ -74,17 +78,14 @@ def format_content(text):
   # Organize the data into a dictionary
   data = {
       "title": extract_title(cleaned_text.split("'")),
-      "certifications": extract_certifications(cleaned_text),
-      "formation": extract_formation(cleaned_text),
+      "user": extract_username(cleaned_text),
+      "trainings": extract_certifications(cleaned_text),
+      "degree": extract_formation(cleaned_text),
       "technos": extract_skills(cleaned_text),
-      # "frameworks": extract_frameworks(cleaned_text),
-      # "ide": extract_ide(cleaned_text),
-      # "tools": extract_tools(cleaned_text),
-      # "autres": cleaned_text.split("Autres")[1].split("LANGUES")[0].strip(', '),
-      # "langues": cleaned_text.split("LANGUES")[1].split("ExpériencesProfessionnelles")[0].strip(', '),
-      # "experiences_professionnelles": cleaned_text.split("ExpériencesProfessionnelles")[1].split("Ayoub A.")[0].strip(', '),
+      "experiences": extract_exp_pro(cleaned_text),
   }
 
+  #print("CV TEXT ====> " + cleaned_text)
   print("CV TITLE ====> " + cleaned_text.split("'")[1])
 
   # Write data to a JSON file

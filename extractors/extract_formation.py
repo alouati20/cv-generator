@@ -16,6 +16,4 @@ def extract_formation(content):
                 title = cleaned_array[i+1].strip("'")
                 result.append({"date": date, "title": title})
 
-
     return result
-
