@@ -85,10 +85,8 @@ def format_content(text):
       "experiences": extract_exp_pro(cleaned_text),
   }
 
-  #print("CV TEXT ====> " + cleaned_text)
   print("CV TITLE ====> " + cleaned_text.split("'")[1])
 
-  # Write data to a JSON file
   with open('cv_data.json', 'w') as json_file:
       json.dump(data, json_file, ensure_ascii=False, indent=4)
 
@@ -96,4 +94,3 @@ def format_content(text):
 
 if __name__ == "__main__":
   main()
-# [END docs_quickstart]
